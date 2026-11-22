@@ -1,0 +1,1 @@
+export default function Loading(){return <div className="container section"><div className="skeleton h24"/><div style={{height:24}}/><div className="grid-three"><div className="skeleton h36"/><div className="skeleton h36"/><div className="skeleton h36"/></div></div>}

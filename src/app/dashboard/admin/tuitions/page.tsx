@@ -1,0 +1,10 @@
+"use client";
+import {useEffect,useState} from "react";
+import {api,money,dateString} from "@/lib/api";
+import {SessionGate,useToast} from "@/components/Providers";
+import {Badge,Busy,Empty} from "@/components/Toolkit";
+import type {Tuition} from "@/lib/types";
+export default function AdminTuitions(){const [items,setItems]=useState<Tuition[]>([]),[busy,setBusy]=useState(true),toast=useToast();const load=async()=>{try{setItems((await api<{items:Tuition[]}>("/api/admin/tuitions",{auth:true})).items);}catch(e){toast(e instanceof Error?e.message:"Could not load tuitions","error");}finally{setBusy(false);}};useEffect(()=>{void Promise.resolve().then(()=>load());},[]);
+ const decide=async(t:Tuition,approvalStatus:"approved"|"rejected")=>{try{await api(`/api/admin/tuitions/${t.id}/approval`,{method:"PATCH",auth:true,body:{approvalStatus}});toast(`Tuition ${approvalStatus}`);void load();}catch(e){toast(e instanceof Error?e.message:"Could not moderate","error");}};
+ return <SessionGate role="admin"><span className="eyebrow">QUALITY AND TRUST</span><h1 className="dashboard-title">Tuition Approvals</h1><p className="dashboard-subtitle">Only approved, active listings appear on the public Browse page.</p>{busy?<Busy/>:items.length?<div className="data-table-wrap"><table className="data-table"><thead><tr><th>Tuition</th><th>Tutor</th><th>Monthly Fee</th><th>Created</th><th>Approval</th><th>Action</th></tr></thead><tbody>{items.map(t=><tr key={t.id}><td><strong>{t.title}</strong><small>{t.subject} · {t.classLevel}</small></td><td><strong>{t.tutorName}</strong><small>{t.tutorEmail}</small></td><td>{money(t.monthlyFee)}</td><td>{dateString(t.createdAt)}</td><td><Badge status={t.approvalStatus}/></td><td><div className="table-actions"><button className="button button-primary small" disabled={t.approvalStatus==="approved"} onClick={()=>void decide(t,"approved")}>Approve</button><button className="button button-danger small" disabled={t.approvalStatus==="rejected"} onClick={()=>void decide(t,"rejected")}>Reject</button></div></td></tr>)}</tbody></table></div>:<Empty title="No tuition posts to review"/>}</SessionGate>;
+}

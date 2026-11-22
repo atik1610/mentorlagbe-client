@@ -1,0 +1,10 @@
+"use client";
+import {useEffect,useState} from "react";
+import {api,dateString,money} from "@/lib/api";
+import {SessionGate,useToast} from "@/components/Providers";
+import {Busy,Empty,Badge} from "@/components/Toolkit";
+import type {Application} from "@/lib/types";
+export default function MyApplications(){const [items,setItems]=useState<Application[]>([]),[busy,setBusy]=useState(true),toast=useToast();const load=async()=>{try{setItems((await api<{items:Application[]}>("/api/student/applications",{auth:true})).items);}catch(e){toast(e instanceof Error?e.message:"Cannot load applications","error");}finally{setBusy(false);}};useEffect(()=>{void Promise.resolve().then(()=>load());},[]);
+ const cancel=async(id:string)=>{if(!confirm("Cancel this pending application?"))return;try{await api(`/api/student/applications/${id}`,{auth:true,method:"DELETE"});toast("Application cancelled");void load();}catch(e){toast(e instanceof Error?e.message:"Cannot cancel","error");}};
+ return <SessionGate role="student"><span className="eyebrow">YOUR LEARNING JOURNEY</span><h1 className="dashboard-title">My Applications</h1><p className="dashboard-subtitle">Track every tuition request and its latest response.</p>{busy?<Busy/>:!items.length?<Empty title="Your application list is empty" href="/tuitions" message="Explore a tuition session and apply to get started."/>:<div className="data-table-wrap"><table className="data-table"><thead><tr><th>Tuition</th><th>Tutor</th><th>Monthly Fee</th><th>Applied</th><th>Status</th><th>Action</th></tr></thead><tbody>{items.map(a=><tr key={a.id}><td><strong>{a.tuitionTitle}</strong><small>{a.subject}</small></td><td><strong>{a.tutorName}</strong><small>{a.tutorEmail}</small></td><td>{money(a.monthlyFee)}</td><td>{dateString(a.appliedAt)}</td><td><Badge status={a.status}/></td><td>{a.status==="pending"?<button className="button button-danger small" onClick={()=>void cancel(a.id)}>Cancel</button>:<span className="subtle-text">Decided</span>}</td></tr>)}</tbody></table></div>}</SessionGate>;
+}

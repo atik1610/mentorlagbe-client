@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="580" height="490" viewBox="0 0 580 490">
+<defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d3ccff"/><stop offset="1" stop-color="#97c8ea"/></linearGradient><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5746b7"/><stop offset="1" stop-color="#9c7def"/></linearGradient></defs>
+<circle cx="298" cy="248" r="206" fill="url(#a)" opacity=".5"/><ellipse cx="306" cy="440" rx="208" ry="22" fill="#d6d9f4"/>
+<rect x="105" y="101" width="353" height="268" rx="19" fill="#fff" stroke="#c5c7e7" stroke-width="5"/><rect x="119" y="115" width="325" height="205" rx="9" fill="#f2f3ff"/>
+<rect x="144" y="141" width="135" height="15" rx="8" fill="#c7c0fc"/><rect x="144" y="169" width="195" height="9" rx="5" fill="#d4d8eb"/><rect x="144" y="187" width="158" height="9" rx="5" fill="#d4d8eb"/>
+<circle cx="358" cy="202" r="55" fill="#d8f6e9"/><circle cx="358" cy="178" r="23" fill="#f0ba91"/><path d="M304 249 Q358 195 412 249 L412 269 L304 269Z" fill="url(#b)"/><path d="M338 174 Q348 140 377 161 L382 181 Q361 173 343 186Z" fill="#29364f"/>
+<rect x="146" y="236" width="112" height="24" rx="12" fill="#5f4ce0"/><rect x="146" y="277" width="163" height="8" rx="4" fill="#dedcf5"/><rect x="315" y="277" width="91" height="8" rx="4" fill="#dedcf5"/>
+<path d="M94 365 H465 L486 389 Q488 399 475 399 H83 Q70 399 73 389Z" fill="#9692c9"/><path d="M174 365 H396 L408 382 H162Z" fill="#c9c8e8"/>
+<g transform="translate(26 245)"><rect width="100" height="84" rx="13" fill="#fff" stroke="#e1def9"/><circle cx="29" cy="28" r="14" fill="#f9c68e"/><path d="M10 60 Q29 36 50 60Z" fill="#72c6b6"/><path d="M62 27 h25 M62 40 h20 M62 53 h15" stroke="#b8b0ef" stroke-width="5" stroke-linecap="round"/></g>
+<g transform="translate(448 87)"><rect width="112" height="82" rx="13" fill="#fff" stroke="#e1def9"/><path d="M20 42 l15 13 24-30" stroke="#31b895" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="18" y="70" font-size="12" font-weight="bold" fill="#5c5a8a">Keep growing</text></g>
+<circle cx="74" cy="96" r="10" fill="#7f6de8"/><circle cx="485" cy="369" r="11" fill="#72ccbd"/><circle cx="468" cy="58" r="5" fill="#f0bd71"/><path d="M55 187 l9 -19 9 19 -9 19Z" fill="#eebc77"/>
+</svg>

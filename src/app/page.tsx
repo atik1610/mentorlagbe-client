@@ -1,69 +1,20 @@
-import Image from "next/image";
-
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+"use client";
+import Link from "next/link";
+import {useEffect,useState} from "react";
+import {api,dashboardRoute} from "@/lib/api";
+import type {Tuition} from "@/lib/types";
+import {TuitionCard,SectionHeading,Busy,Empty} from "@/components/Toolkit";
+import {useAuth} from "@/components/Providers";
+const subjects=[{name:"Mathematics",key:"Math",icon:"∑"},{name:"Physics",key:"Physics",icon:"⚛"},{name:"Programming",key:"Programming",icon:"⌘"},{name:"IELTS",key:"IELTS",icon:"Aa"}];
+export default function Home(){const [featured,setFeatured]=useState<Tuition[]>([]),[busy,setBusy]=useState(true),[stats,setStats]=useState<{activeListings:number;students:number;tutors:number}|null>(null);const {user}=useAuth();
+ useEffect(()=>{void Promise.all([api<{items:Tuition[]}>("/api/featured"),api<{activeListings:number;students:number;tutors:number}>("/api/meta")]).then(([a,b])=>{setFeatured(a.items);setStats(b);}).catch(()=>{}).finally(()=>setBusy(false));},[]);
+ return <>
+ <section className="hero"><div className="container hero-grid"><div><span className="eyebrow">✦ LEARN BETTER, TOGETHER</span><h1>Your next big <em>breakthrough</em> starts here.</h1><p className="hero-copy">Find dedicated tutors for your subject, budget and schedule. From one-to-one mentoring to focused group batches, learning should fit your life.</p><div className="hero-actions"><Link href="/tuitions" className="button button-primary">Explore Tuitions ↗</Link><Link href={user?dashboardRoute(user.role):"/sign-up"} className="button button-outline">{user?"Go to Dashboard":"Become a Tutor"}</Link></div><div className="hero-trust"><span className="stars">★★★★★</span><span>A platform built around students and mentors</span></div>{stats&&<div className="hero-stats"><div><b>{stats.activeListings}</b><span>Active sessions</span></div><div><b>{stats.tutors}</b><span>Registered tutors</span></div><div><b>{stats.students}</b><span>Registered students</span></div></div>}</div>
+ <div className="hero-art"><img src="/mentor-hero.svg" alt="Illustration of a mentor helping a student learn online"/><div className="hero-float float-a">✦ Personalized guidance</div><div className="hero-float float-b">✓ Learn at your pace</div></div></div></section>
+ <section className="container section"><SectionHeading eyebrow="FIND YOUR SUBJECT" title="What would you like to learn?" subtitle="Explore our most popular learning paths and connect with tutors who understand your goals."/><div className="subject-grid">{subjects.map(s=><Link className="subject-pill" href={`/tuitions?search=${encodeURIComponent(s.key)}`} key={s.name}><span className="subject-icon">{s.icon}</span><span><b>{s.name}</b><small>Explore classes ↗</small></span></Link>)}</div></section>
+ <section className="section section-soft"><div className="container"><div className="row space-between wrap" style={{gap:20}}><SectionHeading eyebrow="JUST ADDED" title="Featured tuition sessions" subtitle="The newest approved, active sessions. Updated from our live database."/><Link href="/tuitions" className="button button-outline">Browse all sessions →</Link></div>{busy?<Busy/>:featured.length?<div className="tuition-grid">{featured.map(item=><TuitionCard key={item.id} tuition={item}/>)}</div>:<Empty title="Great tutors are on their way" message="Approved tuition posts will appear here as soon as our team reviews them." href="/sign-up" label="Join the community"/>}</div></section>
+ <section className="container section"><SectionHeading eyebrow="SIMPLE AND TRANSPARENT" title="How MentorLagbe works" subtitle="A smoother journey from looking for help to starting your next lesson."/><div className="grid-three">{[{n:"01",title:"Browse & discover",body:"Filter by subject, level, mode and budget to find the right session."},{n:"02",title:"Apply with confidence",body:"Tell the tutor about your schedule and goals. Track every response."},{n:"03",title:"Start growing",body:"Connect with your tutor and keep your learning on course."}].map(s=><div className="feature-card step-card" key={s.n}><span className="step-number">{s.n}</span><h3>{s.title}</h3><p>{s.body}</p></div>)}</div></section>
+ <section className="section section-soft"><div className="container"><SectionHeading eyebrow="PLANS FOR EVERY JOURNEY" title="Start free. Grow without limits." subtitle="Pro plans add flexibility when you're ready to do more."/><div className="grid-two"><div className="plan-card"><span className="eyebrow">FREE PLAN</span><div className="price">$0 <span>/ forever</span></div><h3>Everything to get started</h3><p>Students can browse and apply. Tutors can post up to two tuitions.</p><Link href="/sign-up" className="button button-outline">Get started for free</Link></div><div className="plan-card featured"><span className="plan-featured-tag">MORE POSSIBILITIES</span><span className="eyebrow">PRO PLAN</span><div className="price">$10–$15 <span>/ upgrade</span></div><h3>Go further with MentorLagbe</h3><p>Unlimited posts for tutors and a priority badge for students.</p><Link href="/pricing" className="button button-primary">See Pro Plans →</Link></div></div></div></section>
+ <section className="container section"><div className="cta-panel"><div><span className="eyebrow" style={{color:"#b7ffe0"}}>YOUR JOURNEY AWAITS</span><h2>Make room for your next big idea.</h2><p>Connect with a mentor or become one today.</p></div><Link href="/sign-up" className="button">Get Started →</Link></div></section>
+ </>;
 }

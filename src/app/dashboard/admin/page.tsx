@@ -1,0 +1,9 @@
+"use client";
+import Link from "next/link";
+import {useEffect,useState} from "react";
+import {api} from "@/lib/api";
+import {SessionGate} from "@/components/Providers";
+import {StatCard,Busy} from "@/components/Toolkit";
+export default function AdminOverview(){const [stats,setStats]=useState<{totalUsers:number;totalTutors:number;pending:number;approved:number;revenue:number}|null>(null);useEffect(()=>{void api<typeof stats>("/api/admin/stats",{auth:true}).then(setStats).catch(()=>{});},[]);
+ return <SessionGate role="admin"><span className="eyebrow">PLATFORM CONTROL CENTER</span><h1 className="dashboard-title">Admin Overview</h1><p className="dashboard-subtitle">Keep the learning community safe, active and growing.</p>{!stats?<Busy/>:<div className="stats-grid"><StatCard label="Total users" value={stats.totalUsers} symbol="♧"/><StatCard label="Total tutors" value={stats.totalTutors} symbol="✧"/><StatCard label="Pending / approved" value={`${stats.pending} / ${stats.approved}`} symbol="◷"/><StatCard label="Stripe revenue (USD)" value={`$${stats.revenue.toFixed(2)}`} symbol="＄"/></div>}<div className="grid-three"><div className="feature-card"><div className="feature-icon">♧</div><h3>Manage users</h3><p>Review registered accounts and assign roles securely.</p><Link href="/dashboard/admin/users" className="button-link">Open users →</Link></div><div className="feature-card"><div className="feature-icon">✓</div><h3>Moderate tuitions</h3><p>Approve or reject tuition posts before they appear publicly.</p><Link href="/dashboard/admin/tuitions" className="button-link">Review posts →</Link></div><div className="feature-card"><div className="feature-icon">＄</div><h3>Track payments</h3><p>View Stripe-confirmed purchases and Pro upgrades.</p><Link href="/dashboard/admin/transactions" className="button-link">View transactions →</Link></div></div></SessionGate>;
+}

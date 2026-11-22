@@ -1,0 +1,12 @@
+"use client";
+import Link from "next/link";
+import {useEffect,useState} from "react";
+import {api,money} from "@/lib/api";
+import type {Tuition} from "@/lib/types";
+import {SessionGate,useToast} from "@/components/Providers";
+import {Badge,Busy,Empty} from "@/components/Toolkit";
+export default function MyTuitions(){const [items,setItems]=useState<Tuition[]>([]),[busy,setBusy]=useState(true),toast=useToast();const load=async()=>{try{setItems((await api<{items:Tuition[]}>("/api/tutor/tuitions",{auth:true})).items);}catch(e){toast(e instanceof Error?e.message:"Could not load","error");}finally{setBusy(false);}};useEffect(()=>{void Promise.resolve().then(()=>load());},[]);
+ const toggle=async(t:Tuition)=>{try{await api(`/api/tuitions/${t.id}/toggle`,{auth:true,method:"PATCH",body:{isActive:!t.isActive}});toast("Tuition availability updated");void load();}catch(e){toast(e instanceof Error?e.message:"Cannot update","error");}};
+ const remove=async(t:Tuition)=>{if(!confirm(`Delete "${t.title}" permanently?`))return;try{await api(`/api/tuitions/${t.id}`,{auth:true,method:"DELETE"});toast("Tuition deleted");void load();}catch(e){toast(e instanceof Error?e.message:"Cannot delete","error");}};
+ return <SessionGate role="tutor"><div className="row space-between wrap"><div><span className="eyebrow">MANAGE YOUR LISTINGS</span><h1 className="dashboard-title">My Tuitions</h1><p className="dashboard-subtitle">Edit, close, reopen or remove tuition sessions.</p></div><Link className="button button-primary" href="/dashboard/tutor/post-tuition">＋ New Tuition</Link></div>{busy?<Busy/>:items.length?<div className="data-table-wrap"><table className="data-table"><thead><tr><th>Tuition</th><th>Fee</th><th>Approval</th><th>Status</th><th>Manage</th></tr></thead><tbody>{items.map(t=><tr key={t.id}><td><strong>{t.title}</strong><small>{t.subject} · {t.classLevel}</small></td><td>{money(t.monthlyFee)}</td><td><Badge status={t.approvalStatus}/></td><td><Badge status={t.isActive?"active":"closed"}/></td><td><div className="table-actions"><Link href={`/dashboard/tutor/post-tuition?edit=${t.id}`} className="button button-outline small">Edit</Link><button className="button button-outline small" onClick={()=>void toggle(t)}>{t.isActive?"Close":"Reopen"}</button><button className="button button-danger small" onClick={()=>void remove(t)}>Delete</button></div></td></tr>)}</tbody></table></div>:<Empty title="No tuition posts yet" href="/dashboard/tutor/post-tuition" label="Create your first listing"/>}</SessionGate>;
+}

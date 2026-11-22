@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function Cancel(){return <section className="auth-section"><div className="auth-card" style={{textAlign:"center"}}><span style={{fontSize:"3.5rem"}}>↶</span><h1 style={{fontSize:"2rem"}}>Checkout cancelled</h1><p>No payment was confirmed, and your plan remains unchanged. You can try again whenever you&apos;re ready.</p><Link href="/pricing" className="button button-primary">View Plans</Link></div></section>}
